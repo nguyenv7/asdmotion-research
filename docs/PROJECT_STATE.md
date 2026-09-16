@@ -39,6 +39,6 @@ Read the dossier's measured-data section, then `OPEN_QUESTIONS.md`. Obtain or va
 
 ## Rebuild
 
-Public repository: https://github.com/nguyenv7/asdmotion-research (created 2026-09-16). The publication policy is in decision 0002. Raw downloads, derived record-level outputs, downloaded papers and source snapshots remain local; owner links and manifests are versioned. See README.md for rehydrating a fresh clone. Raw videos are not publicly released (paper p. 9).
+Public repository: https://github.com/nguyenv7/asdmotion-research (created and initial research commit pushed 2026-09-16). Initial research commit: `9ab4aa9`. Publication audit passed: 66 files, approximately 1.27 MB total, no dataset/model blobs, every file below 1 MB. All 16 semantic/unit checks passed. The publication policy is in decision 0002. Raw downloads, derived record-level outputs, downloaded papers and source snapshots remain local; owner links and manifests are versioned. See README.md for rehydrating a fresh clone. Raw videos are not publicly released (paper p. 9).
 
 Commands are in README.md. Logs and JSON/CSV outputs capture actual results. `scripts/build_report.ps1` builds LaTeX. Update this file when new evidence resolves an open question; never replace an unresolved inference with an asserted fact solely because it is convenient for code.
