@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-09-16",
+  "confidence_threshold_for_descriptive_audit": 0.2,
+  "confidence_threshold_is_calibrated": false,
+  "binary_positive_label": 1,
+  "clip_identity": "record_index; identifier is not unique",
+  "participant_mapping": "unresolved for labeled clips",
+  "recorded_fps_policy": "retain and audit; do not force 30",
+  "missing_pose_policy": "preserve as unknown; no zero-filling for kinematic interpretation",
+  "timing_fields": "start_frame/end_frame semantics unresolved",
+  "raw_input_mutation": false,
+  "predictive_training_run": false
+}

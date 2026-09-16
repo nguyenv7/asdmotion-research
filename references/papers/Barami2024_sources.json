@@ -1,0 +1,29 @@
+[
+  {
+    "file": "Barami2024_JAMA.pdf",
+    "source_url": "https://doi.org/10.1001/jamanetworkopen.2024.32851",
+    "retrieval_date": "2026-09-16",
+    "sha256": "265ca7629980d3f5b87cb33491c6ae2238eb142fea494c3ff2d3695f65ff88ab",
+    "bytes": 1025643,
+    "pages": 12,
+    "supplement_retrieval_endpoint": null
+  },
+  {
+    "file": "Barami2024_supplement1.pdf",
+    "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/instance/11393723/bin/jamanetwopen-e2432851-s001.pdf",
+    "retrieval_date": "2026-09-16",
+    "sha256": "9ec55a12ca97699e778d13c50dd383185bf223540a5ddfc04a94795316dc79ac",
+    "bytes": 693818,
+    "pages": 9,
+    "supplement_retrieval_endpoint": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11393723/supplementaryFiles"
+  },
+  {
+    "file": "Barami2024_supplement2.pdf",
+    "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/instance/11393723/bin/jamanetwopen-e2432851-s002.pdf",
+    "retrieval_date": "2026-09-16",
+    "sha256": "aa9a87eaf7f8d9ba8e26242f0ba0d0c2f8b55a8d12510c1e674bcd6cf036870e",
+    "bytes": 16775,
+    "pages": 1,
+    "supplement_retrieval_endpoint": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11393723/supplementaryFiles"
+  }
+]

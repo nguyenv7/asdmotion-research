@@ -1,0 +1,155 @@
+% Section fragment. Requires hyperref; no bibliography keys are used.
+\section{Recent literature and research positioning}
+\label{sec:literature}
+\noindent Search cutoff: 16 September 2026. This focused scoping search covers the
+original ASDPose release and nine complementary primary studies. The full search
+log, source register, methodological qualifications, and download manifest are
+preserved in \texttt{reports/literature\_survey.md} and
+\texttt{references/papers/literature\_downloads.json}.
+
+\subsection{Has the released dataset been reused?}
+No independent reuse of the released ASDPose files was verified in this search.
+This is a bounded retrieval result, not evidence that no reuse exists. Exact
+ASDMotion/ASDPose searches and citation-neighborhood searches found relevant
+studies with different cohorts. For example, Freud et al. and Amraee et al. cite
+Barami but describe separate experiments. Shared authors or an ADOS assessment
+context do not establish identical data. The original release remains the direct
+baseline: \href{https://doi.org/10.1001/jamanetworkopen.2024.32851}{Barami et al.,
+JAMA Network Open, 2024}.
+
+\subsection{Different questions require different observations}
+\begin{description}
+\item[Repetition structure.]
+\href{https://doi.org/10.1038/s41598-026-60095-8}{MBaye et al., Scientific Reports,
+July 2026} construct interpretable persistent-homology features. The publisher
+identifies an accepted early article; detailed methods in our review refer to
+the \href{https://doi.org/10.1101/2025.09.03.674008}{September 2025 preprint}.
+It uses a distinct six-participant video/accelerometer cohort. Periodicity is
+a useful candidate representation, not demonstrated ASDPose transfer.
+
+\item[Concurrent movement categories.]
+\href{https://doi.org/10.1002/aur.70020}{Lemler et al., Autism Research, March 2025}
+use OpenPose and an LSTM for multi-label flapping/jumping recognition. With
+subject-disjoint nested validation, macro accuracy is 0.702 but macro F1 is
+0.318. This study makes performance under new-child evaluation especially
+important; its Frankfurt cohort is separate.
+
+\item[Multimodal action recognition.]
+\href{https://doi.org/10.1109/JBHI.2024.3511601}{Zhang et al., IEEE JBHI,
+March 2025 issue} combine RGB, optical flow, and skeletal structure with APMFNet
+on ACSA653. Such fusion requires modalities that cannot be recovered from a
+body-skeleton release. The author manuscript is archived locally for protocol
+comparison.
+
+\item[Interpersonal coordination.]
+\href{https://doi.org/10.1038/s41598-024-56098-y}{Koehler et al., Scientific
+Reports, March 2024} classify patient--clinician dyads from motion synchrony.
+Balanced accuracy is 63.4\% against clinical controls. The authors discuss the
+possible influence of clinician movement. This is a dyadic clinical-comparison
+question rather than SMM episode detection.
+
+\item[Neural mechanisms of imitation.]
+\href{https://doi.org/10.1038/s41597-025-05313-0}{Paulo et al., Scientific Data,
+June 2025} introduce Move4AS: EEG with marker-based 3D motion during walking
+and dancing imitation. It enables neural--motor questions requiring different
+sensors and an experimental task.
+
+\item[Purposeful fine motor control.]
+\href{https://doi.org/10.1002/aur.70049}{Freud et al., Autism Research, May 2025}
+analyze thumb/index-finger grasping in young adults, obtaining over 84\%
+classification accuracy with subject-wise validation. The population and
+fine-grained measurement differ from preschool body-pose video. Their result
+does not validate diagnosis from ASDPose.
+
+\item[Measurement agreement and facial context.]
+\href{https://doi.org/10.1186/s13229-025-00685-x}{Manelis-Baram et al., Molecular
+Autism, October 2025} compare three facial-expression tools. Outputs differ,
+but expression quantity does not significantly distinguish groups. The study
+leaves timing, quality, and social context unresolved and is not verified reuse
+of the released skeleton data.
+
+\item[Event-level kinematics.]
+\href{https://doi.org/10.1111/desc.70176}{Stenum et al., Developmental Science,
+March 2026 online} find that event-level amplitude differences disappear after
+averaging. This separate toddler cohort cites Barami but does not reuse ASDPose.
+Data access requires author request and a data-use agreement.
+
+\item[Semantic behavior context.]
+\href{https://openaccess.thecvf.com/content/CVPR2026W/CV4Smalls/papers/Amraee_Toward_Automated_Behavior_Understanding_in_Autism_A_Zero-Shot_Vision-Language_Model_CVPRW_2026_paper.pdf}{Amraee
+et al., CVPR Workshops, June 2026} classify 40 clips with vision-language
+descriptions and prompted language models. The target includes self-injury,
+aggression, and property destruction. This requires visual context and is a
+small separate evaluation, not ASDPose benchmarking.
+\end{description}
+
+\subsection{Proposed research direction: trustworthy motion measurement}
+The following proposals are our synthesis, not results reported by the cited
+studies. A useful first research question is:
+\begin{quote}
+How reliably can SMM burden be estimated for unseen children when pose quality,
+missing intervals, and temporal uncertainty are explicitly represented?
+\end{quote}
+This question has a data-availability gate. The inspected training release
+contains 36,930 clips; it does not establish a complete recording timeline or
+continuous annotation coverage. Boundary units, source-recording correspondence,
+and participant mapping require confirmation. Consequently, clip-level
+measurement reliability is the directly feasible first stage. Full-session
+burden evaluation must wait for validated continuous recordings, complete event
+intervals, and an observed-time denominator. These are local audit findings,
+documented in \texttt{data/processed/dataset\_summary.json},
+\texttt{dataset\_structure.json}, and \texttt{eda\_notes.json}; the continuous
+archive was pending at this review stage. The proposed sequence is:
+\begin{enumerate}
+\item Freeze participant-disjoint splits before choosing features or thresholds.
+Verify interval units and continuous label coverage before estimating burden.
+Summarize recording length, repeated sessions, visible-body coverage, joint
+confidence, missing runs, and track discontinuities.
+\item Establish simple motion-energy and periodicity baselines. Compare
+autocorrelation/spectral features with recurrence or topological features before
+claiming benefits from a more complex representation.
+\item Reproduce the original temporal labeling and inference rules. Report all
+deviations between paper, repository, and available release.
+\item Compare confidence-aware features or masking and multiple temporal scales
+with the same baseline, children, labels, and evaluation procedure.
+\item Evaluate precision--recall, episode matching, false events per hour, and
+duration/burden error. Bootstrap children, not overlapping windows. Tune
+calibration and thresholds on validation data only.
+\item Explore clinical associations only after reliability is demonstrated.
+Handle repeated sessions and prespecify covariates; do not interpret association
+as a causal mechanism or treatment response.
+\end{enumerate}
+
+\paragraph{Tests that could disprove the proposed benefit.}
+An uncertainty-aware method is not useful merely because its aggregate score
+improves. Check whether the improvement persists at matched recall, in children
+with fewer visible joints, and after matching movement energy. Test ordinary
+periodic activity, track jumps, weak/aperiodic events, overlapping people, and
+short bouts as separate error strata. Report abstention coverage and the share
+of time that cannot be measured. Negative results are informative if they expose
+a representation limit.
+
+\paragraph{Proposed event-distribution analysis.}
+Motivated by Stenum's distinction between events and averages, compare
+within-child distributions of wrist/body amplitude and recurrence instead of
+only a single child mean. This is our proposed experiment, not a published
+ASDPose result. The release includes subtype and combined action strings, which
+need an ontology and concurrency audit. A label such as ``Fingers'' does not
+provide finger coordinates in the observed 17-joint body representation.
+
+\paragraph{Questions requiring additional data.}
+Diagnostic discrimination needs an appropriate non-ASD clinical comparison
+cohort. Subtype discovery needs trustworthy subtype annotation or careful
+external validation of clusters. Social synchrony needs stable partner identity
+and role. Facial expression, semantic object interaction, EEG coupling, and
+finger-level grasping require modalities beyond the released body coordinates.
+Longitudinal treatment claims require intervention and follow-up information,
+not just repeated recordings.
+
+\paragraph{Reading order and durable evidence.}
+Read the original methods with the local schema audit first, then Lemler for
+evaluation design and MBaye for interpretable recurrence. Read Koehler and
+Manelis-Baram to examine context and measurement validity. Use Move4AS, grasping,
+multimodal fusion, and VLM work when choosing whether a later research question
+justifies additional data. Citation counts were not reliably refreshed and are
+not used to rank evidence. Publisher/author URLs, affiliations, dates, access
+failures, and paper hashes are recorded in the Markdown report and manifests.

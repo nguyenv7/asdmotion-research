@@ -1,0 +1,18 @@
+{
+  "date": "2026-09-16",
+  "raw_files_downloaded": 3,
+  "labeled_clips_profiled": 36930,
+  "continuous_recordings_profiled": 914,
+  "zip_crc": "passed",
+  "tests_passed": 16,
+  "pdf_pages": 27,
+  "pdf_path": "outputs/latex/main.pdf",
+  "pdf_sha256": "9e441bafa83baa1ad63b550b271eedc6ac69c452458fd770a0a34dee5b3df638",
+  "training_run": false,
+  "remaining_dependencies": [
+    "verified labeled-to-continuous mapping",
+    "timing/padding semantics",
+    "release version reconciliation",
+    "complete continuous event annotations"
+  ]
+}

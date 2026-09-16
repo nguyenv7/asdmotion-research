@@ -1,0 +1,42 @@
+[
+  {
+    "file": "references\\papers\\amraee2026_vlm.pdf",
+    "bytes": 8872075,
+    "sha256": "2633bbfc2554ba7a4e8960f2331047f643aa0463a3c6d1bf714dcf22b60b3d1a"
+  },
+  {
+    "file": "references\\papers\\Barami2024_JAMA.pdf",
+    "bytes": 1025643,
+    "sha256": "265ca7629980d3f5b87cb33491c6ae2238eb142fea494c3ff2d3695f65ff88ab"
+  },
+  {
+    "file": "references\\papers\\Barami2024_supplement1.pdf",
+    "bytes": 693818,
+    "sha256": "9ec55a12ca97699e778d13c50dd383185bf223540a5ddfc04a94795316dc79ac"
+  },
+  {
+    "file": "references\\papers\\Barami2024_supplement2.pdf",
+    "bytes": 16775,
+    "sha256": "aa9a87eaf7f8d9ba8e26242f0ba0d0c2f8b55a8d12510c1e674bcd6cf036870e"
+  },
+  {
+    "file": "references\\papers\\Duan2022_PoseC3D.pdf",
+    "bytes": 5730669,
+    "sha256": "154fcb438c78193a6d5e95d8b373e3292939683d65102d025d2f902525980061"
+  },
+  {
+    "file": "references\\papers\\freud2025_grasping.pdf",
+    "bytes": 1578979,
+    "sha256": "c07cc337fcd1c7a3f75ca81d4a4a21b8be28b15c077910e070729cfaaf579b54"
+  },
+  {
+    "file": "references\\papers\\paulo2025_move4as.pdf",
+    "bytes": 1825233,
+    "sha256": "6aaec6f2f3f7b62ddbf441616651c7798171e2182af3faf7e2b4e8d8cf319493"
+  },
+  {
+    "file": "references\\papers\\zhang2025_apmfnet_author_manuscript.pdf",
+    "bytes": 14379607,
+    "sha256": "9b8d5a764354fcca142c2a007d56cc70925e8cca1d92a864cc9a1838bc8fb344"
+  }
+]

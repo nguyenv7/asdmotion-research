@@ -1,0 +1,26 @@
+[
+  {
+    "file": "data\\raw\\dataset.pkl",
+    "url": "https://drive.google.com/file/d/13t1tO4ZxTKmQG-w6fTy3hHQy8gX1bopl/view",
+    "retrieved_utc": "2026-09-16T15:17:18.692313+00:00",
+    "status": "present",
+    "bytes": 5094311994,
+    "sha256": "4cf33f49c560e276d074277e07a7fc06c3fab52ef488b4605883019abc897db4"
+  },
+  {
+    "file": "data\\raw\\asdpose.zip",
+    "url": "https://drive.google.com/file/d/1MiNIhlf4mL-vRW1ub2TP3nCYzfMW0bYt/view",
+    "retrieved_utc": "2026-09-16T15:17:22.299376+00:00",
+    "status": "present",
+    "bytes": 7846880820,
+    "sha256": "2ca7fa84c91e073c88a761a51a4bbb1cad4775a09466a57dca51b56100becee1"
+  },
+  {
+    "file": "data\\raw\\model.pth",
+    "url": "https://drive.google.com/file/d/1PuPXu6pfBYjz0G6NvWOEUQ_RvedvinAE/view",
+    "retrieved_utc": "2026-09-16T15:17:27.901581+00:00",
+    "status": "present",
+    "bytes": 24235571,
+    "sha256": "f33ce757650a310a3a771d5ec54492f049e85048cee471b0c252872480204853"
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "file": "mbaye2026_persistent_homology.pdf",
+    "url": "https://www.nature.com/articles/s41598-026-60095-8.pdf",
+    "retrieved": "2026-09-16",
+    "status": "failed",
+    "reason": "Response was not a PDF"
+  },
+  {
+    "file": "paulo2025_move4as.pdf",
+    "url": "https://publikationen.bibliothek.kit.edu/1000188491/170761564",
+    "retrieved": "2026-09-16",
+    "status": "downloaded",
+    "bytes": 1825233,
+    "sha256": "6aaec6f2f3f7b62ddbf441616651c7798171e2182af3faf7e2b4e8d8cf319493"
+  },
+  {
+    "file": "zhang2025_apmfnet_author_manuscript.pdf",
+    "url": "https://baiqiaozhang.cc/assets/files/JBHI_revision.pdf",
+    "retrieved": "2026-09-16",
+    "status": "downloaded",
+    "bytes": 14379607,
+    "sha256": "9b8d5a764354fcca142c2a007d56cc70925e8cca1d92a864cc9a1838bc8fb344"
+  },
+  {
+    "file": "freud2025_grasping.pdf",
+    "url": "https://esgeo3.weebly.com/uploads/8/8/2/1/88213736/freud2025kinematics.pdf",
+    "retrieved": "2026-09-16",
+    "status": "downloaded",
+    "bytes": 1578979,
+    "sha256": "c07cc337fcd1c7a3f75ca81d4a4a21b8be28b15c077910e070729cfaaf579b54"
+  },
+  {
+    "file": "amraee2026_vlm.pdf",
+    "url": "https://openaccess.thecvf.com/content/CVPR2026W/CV4Smalls/papers/Amraee_Toward_Automated_Behavior_Understanding_in_Autism_A_Zero-Shot_Vision-Language_Model_CVPRW_2026_paper.pdf",
+    "retrieved": "2026-09-16",
+    "status": "downloaded",
+    "bytes": 8872075,
+    "sha256": "2633bbfc2554ba7a4e8960f2331047f643aa0463a3c6d1bf714dcf22b60b3d1a"
+  },
+  {
+    "file": "lemler2025_multilabel.pdf",
+    "url": "https://onlinelibrary.wiley.com/doi/pdfdirect/10.1002/aur.70020",
+    "retrieved": "2026-09-16",
+    "status": "failed",
+    "reason": "HTTP Error 403: Forbidden"
+  },
+  {
+    "file": "koehler2024_synchrony.pdf",
+    "url": "https://www.nature.com/articles/s41598-024-56098-y.pdf",
+    "retrieved": "2026-09-16",
+    "status": "failed",
+    "reason": "Response was not a PDF"
+  },
+  {
+    "file": "manelisbaram2025_facial.pdf",
+    "url": "https://link.springer.com/content/pdf/10.1186/s13229-025-00685-x.pdf",
+    "retrieved": "2026-09-16",
+    "status": "failed",
+    "reason": "Response was not a PDF"
+  }
+]

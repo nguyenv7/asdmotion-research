@@ -1,0 +1,19 @@
+{
+  "experiment_id": "REQUIRED",
+  "question": "REQUIRED",
+  "status": "not_run",
+  "raw_data_sha256": "REQUIRED",
+  "verified_split_manifest_sha256": "REQUIRED",
+  "participant_mapping_source": "REQUIRED",
+  "code_revision": "REQUIRED",
+  "environment_lock": "requirements-lock.txt",
+  "seed": 0,
+  "preprocessing": {"fps": "REQUIRED", "quality_policy": "REQUIRED", "normalization": "REQUIRED"},
+  "model": "REQUIRED",
+  "selection_budget": "REQUIRED",
+  "validation_metric": "REQUIRED",
+  "test_unlocked_after_selection": false,
+  "metrics": ["precision_recall", "calibration", "per_child_errors"],
+  "event_evaluation": "only if complete continuous annotations are verified",
+  "results": null
+}

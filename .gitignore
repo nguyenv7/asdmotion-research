@@ -1,0 +1,47 @@
+# Local environments and secrets
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+requirements-lock.txt
+
+# Owner-hosted data: only references/provenance are versioned.
+data/**
+!data/README.md
+!data/raw/
+!data/raw/README.md
+!data/raw/manifest.json
+*.pkl
+*.pickle
+*.pth
+*.pt
+*.npz
+*.npy
+*.parquet
+*.h5
+*.hdf5
+*.zip
+*.tar
+*.gz
+*.mp4
+*.avi
+*.mov
+
+# Downloaded third-party material stays local.
+external/
+references/source_snapshots/
+references/papers/*
+!references/papers/*.json
+!references/papers/*.py
+images-from-papers/
+
+# Keep the small compiled research report, not build/QA outputs.
+outputs/**
+!outputs/latex/
+!outputs/latex/main.pdf
+logs/
+tmp/

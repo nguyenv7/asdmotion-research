@@ -1,0 +1,54 @@
+\section{Phased research plan and decision gates}\label{sec:plan}
+\subsection{Phase 0: establish exactly which data exist --- completed}
+Downloaded source, labeled clips, continuous skeleton archive and checkpoint; archived the paper, supplements and accessible related work; preserved hashes, commit records and access limitations. Deliverables are the raw manifest and source register. The archive includes an explicit child/assessment/camera table; its relationship to the labeled file still needs validation. Do not overwrite these originals during experimentation.
+
+\subsection{Phase 1: understand the release and measurement process --- completed}
+Profiled all 36,930 labeled records, their shape, labels, confidence, frame rate, duration, duplicates and release split. Created real skeleton/trajectory examples. Inspected continuous skeletons and their metadata separately. Audited source code with executable counterexamples. The key result is that metadata and missingness can provide strong label cues, so a clip-classification score alone will not establish useful motion recognition.
+
+\subsection{Phase 2: reconstruct an auditable dataset --- specified, mapping unresolved}
+The next action is a precise release-reconciliation request, drafted in \artifact{docs/OPEN_QUESTIONS.md}; no message was sent. Needed answers: labeled-file version, participant crosswalk, original split, units/padding of boundaries, 25/30-fps processing history, whether negative labels exhaustively cover the continuous archive, and zero-pose policy. Meanwhile, retain every original field and use a unique internal \artifact{record_index}; do not deduplicate by identifier alone.
+
+After the mapping is verified, create a canonical manifest with participant, assessment, camera, clip, original timing, fps, preprocessing version, label provenance and quality coverage. The provided \artifact{scripts/03_make_grouped_splits.py} enforces complete explicit mapping and blocks subject or nonzero exact-coordinate overlap between partitions. All-zero hash collisions are audited as missing-data patterns. It deliberately does not infer subjects from filename tokens. Adapt the released clip schema to MMAction2 only after confirming label direction and the correct child axis. Maintain an untouched test set and a distinct validation set.
+
+\textbf{Gate:} no claim of subject-independent performance until identities are established; no continuous burden claim until full event coverage and timing are aligned. Removing bad clips can alter the population. Report the number removed by child and label and preserve a documented unusable-data stratum.
+
+\subsection{Phase 3: measure simple baselines before selecting architecture}
+First compare metadata-only, quality-only, motion-energy, body-relative angle/velocity and periodicity baselines. Metadata-only models are diagnostic controls; they are not the intended research model. The present fps-only rule is post-hoc descriptive evidence and should not be presented as a competitive score.
+
+Within a verified split, test duration-matched, fps-matched and quality-matched subsets with their original unfiltered counterparts. The 25-fps subset contains both classes and is a useful sensitivity analysis, but it changes the positive population; there is no 30-fps negative comparison in the current release. Re-extraction from a uniform source pipeline would be stronger if the required source material becomes available. Report the sample and participant loss from every restriction.
+
+\textbf{Gate:} if performance largely disappears after controlling acquisition, investigate data construction before architecture. If an interpretable motion baseline remains informative, identify its systematic failures before adding a neural model.
+
+\subsection{Phase 4: reproduce and then improve recognition}
+Repair the confirmed code defects in an isolated fork with tests. Reproduce the paper's representation, model and temporal processing under a documented compatible environment, while explicitly labeling unresolved historical hyperparameters and dataset differences. A modern rerun is not an exact reproduction merely because it uses PoseC3D.
+
+Proposed experiment ladder: (A) body-relative features; (B) ST-GCN/temporal model; (C) PoseC3D reference; (D) confidence-masked or uncertainty-aware variant; (E) multi-scale temporal variant. Keep children, quality policy, supervision, optimization budget and evaluation constant where possible. Factorial ablations should separate the benefits of representation, extra context, confidence handling and temporal aggregation. Do not attribute a gain to a new network when it came from cleaning labels or changing data selection.
+
+\subsection{Phase 5: temporal localization and full-session burden}
+Conditional on validated continuous labels, compare max pooling with mean/hysteresis/localization alternatives. Use event, frame and burden metrics simultaneously. Evaluate short bouts, long bouts, missing joints, camera changes, ordinary periodic play and transitions. Quantify onset/offset uncertainty and observation coverage. Multi-camera fusion requires synchronization and an explicit rule to avoid counting the same event twice.
+
+The clinically meaningful output is a behavior measurement with uncertainty and coverage, not an assertion that every detected repetitive movement is harmful. SMMs may be self-regulatory; the dataset does not reveal subjective function or treatment need. \cite[pp.~2--3]{barami2024}
+
+\subsection{Phase 6: broader ASD questions require new evidence}
+\begin{longtable}{@{}P{.27\linewidth}P{.32\linewidth}P{.33\linewidth}@{}}\toprule
+Research question & What current data can contribute & Additional requirement\\\midrule\endhead
+Robust SMM recognition & Labeled body-motion clips and confidence & Resolved mapping, confound controls and verified split\\
+Subtype description & Atomic and combined movement labels & Label reliability, enough independent examples, sensitivity to incomplete body representation\\
+Fine finger or facial behavior & Coarse wrist/head proxy only & Hand/face landmarks or authorized raw video; validate extraction\\
+ASD diagnosis/screening & A positive-cohort representation to investigate & Non-ASD and other developmental controls, prospective design and external validation\\
+Social synchrony & Possibly a future methodological component & Stable partner tracks and roles; present child-only release is insufficient\\
+Clinical severity/development & Candidate reliable motor measurements & Linked clinical/demographic scores and repeated-session design\\
+Treatment effects or causality & Baseline measurement methodology & Intervention assignment, follow-up and causal design; cross-sectional association is insufficient\\
+Neural mechanisms & Motion features as a potential modality & Synchronized EEG/other physiology and experimental conditions\\\bottomrule
+\end{longtable}
+
+\subsection{Recommended initial research direction}
+\textbf{Working question: Can heterogeneous SMMs be recognized from 2D skeletons in a way that remains valid across pose quality and acquisition conditions?} This is a proposed direction, not a claimed novelty statement. Its first contribution would be a transparent dataset/protocol audit; its modeling contribution would need to demonstrate improvement under verified child-disjoint and confound-controlled evaluation.
+
+A concrete null hypothesis is that confidence-aware or periodicity-aware modeling adds no benefit beyond simple motion features after controlling acquisition artifacts. Rejecting that null requires matched evaluation and confidence intervals at the child level. If it is not rejected, the useful finding may be a representation or annotation limit. Full-session burden is the next stage once continuous labels and mapping become trustworthy. A larger transformer is not the first unresolved scientific question.
+
+\subsection{Hard limits versus problems that can be engineered}
+Code failures, inconsistent schema, event merging and missingness accounting are repairable engineering problems. Acquiring a verified participant crosswalk, original label provenance and a consistent extraction history requires information from the data producers. Inferring finger motion, emotional function, ASD specificity or causal treatment effects from child body coordinates alone is an information limitation; changing architecture cannot create absent observations. Domain shift to homes, different ages or clinical populations requires new evaluation data, even if within-release accuracy is excellent.
+
+\subsection{Durable working practice}
+Read \artifact{README.md}, \artifact{docs/PROJECT_STATE.md} and \artifact{docs/OPEN_QUESTIONS.md} before continuing. Each experiment must record the raw-data hashes, split-manifest hash, code revision, environment, seeds, preprocessing policy, training/selection budget and metric definitions. Save failed experiments and reasons. The project state distinguishes completed analysis from future plans; no step relies on conversational memory.

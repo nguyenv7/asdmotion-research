@@ -1,0 +1,188 @@
+\section{The data pipeline: representation, algorithm, and failure modes}
+\label{sec:pipeline-audit}
+
+\subsection{Evidence and scope}
+This section audits the retrieved ASDMotion source at commit
+\texttt{f699dc7} and its MMAction2 fork at \texttt{f632b7e}.
+These are retrieved repository versions, not verified paper-era execution
+versions. Source snapshots and full line-level evidence are preserved in
+\texttt{references/source\_snapshots/} and
+\texttt{reports/pipeline\_audit.md}. Ten executable counterexample tests
+in \texttt{tests/test\_upstream\_semantics.py} pass; they reproduce the
+documented upstream behaviors without CUDA or MMCV. A passing
+counterexample test does not mean that the underlying behavior is correct.
+No claim of reproduced training or published accuracy is made here.
+The source references are the
+\href{https://github.com/Dinstein-Lab/ASDMotion/tree/f699dc7b7af5726df5d8e79161d192eac22cfafb}{pinned ASDMotion repository}
+and the
+\href{https://github.com/TalBarami/mmaction2/tree/f632b7e56291805ac6d4debc8c7421b0d2c48f2e}{pinned MMAction2 fork}.
+
+\subsection{From pixels to a movement score}
+The inspected fresh-video path extracts BODY\_25 OpenPose coordinates and
+confidence, converts them to COCO-17, and keeps up to five person slots.
+Each frame independently sorts skeletons by mean confidence, so slot index
+does not identify a persistent person. YOLOv5 child boxes are matched to
+skeleton boxes by intersection over union, followed by nearby-frame
+recovery. The fork's \texttt{ChildDetect} transform then selects one slot
+per frame. These are distinct operations: pose estimation provides body
+geometry, while child selection determines whose geometry is analyzed.
+\footnote{ASDMotion \texttt{openpose\_executor.py:171--181};
+\texttt{skeleton\_matcher.py:19--74}; fork
+\texttt{pose\_loading.py:699--707}.}
+
+The COCO-17 joint order is nose, left/right eye, left/right ear,
+left/right shoulder, left/right elbow, left/right wrist, left/right hip,
+left/right knee, and left/right ankle. Its indices in BODY\_25 are
+\texttt{[0,16,15,18,17,5,2,6,3,7,4,12,9,13,10,14,11]}.
+Thus the model receives neither explicit finger landmarks nor toe/heel,
+neck, or mid-hip landmarks. Coordinates and confidence are separate arrays,
+normally $X\in\mathbb{R}^{M\times T\times17\times2}$ and
+$Q\in\mathbb{R}^{M\times T\times17}$. These arrays contain two-dimensional
+image coordinates, not measured three-dimensional body positions.
+\footnote{ASDMotion \texttt{skeleton\_layout.py:35--38,41--75,114--138};
+\texttt{openpose\_executor.py:171--198}.}
+
+The default inference windows are 200 frames with a 30-frame stride and
+minimum length 60. At 30 frames per second, these correspond to about
+6.67, 1, and 2 seconds; the durations change if frame rate differs.
+Tail windows can be shorter. The fork samples 48 frames from each sequence,
+spatially compacts and resizes poses, and renders 17 confidence-weighted
+Gaussian heatmap channels with standard deviation 0.6. Training uses
+$48\times48$ maps and test uses $56\times56$ maps. Limb maps are disabled.
+\footnote{ASDMotion \texttt{splitter.py:8--37},
+\texttt{preprocess.py:79}; fork \texttt{asdmotion.py} pipelines and
+\texttt{pose\_loading.py:15--131,407--450,583--619}.}
+
+For intuition, a joint heatmap has the form
+\begin{equation}
+ H_{t,j}(u,v)=\max_m q_{m,t,j}
+ \exp\left[-\frac{(u-x_{m,t,j})^2+(v-y_{m,t,j})^2}{2\sigma^2}\right].
+\end{equation}
+Here $m$ indexes people (one after successful child selection), $t$ sampled
+frames, $j$ joints, $(u,v)$ heatmap pixels, and $q$ pose-estimator confidence.
+This formula summarizes the Gaussian-and-maximum implementation, which
+also truncates rendering to a local neighborhood.
+\footnote{Fork \texttt{pose\_loading.py:407--450}.}
+The recognizer applies three-dimensional convolutions across heatmap space
+and time: ResNet3dSlowOnly depth 50 with a two-class I3D head, initialized
+from Kinetics-400 weights. Ten temporal samples and horizontal flips are
+averaged at test time. This is a spatiotemporal classifier over 2D poses,
+not a 3D pose estimator.\footnote{Fork \texttt{asdmotion.py}, model,
+test pipeline, and \texttt{load\_from}.}
+
+\paragraph{Interpretation.}
+The representation makes posture, body-joint displacement and coordination
+available to the classifier. It does not explicitly encode object identity,
+speech, finger articulation, or the child's reason for moving. Whether
+such missing information limits a proposed target is an experimental
+question. The published task is SMM detection within children with ASD,
+not ASD-versus-non-ASD diagnosis.\cite{barami2024}
+
+\subsection{Clip score, event, and burden are different targets}
+The paper assigns each frame the maximum score of its covering windows,
+thresholds at 0.85 inclusively, then merges contiguous positive frames.
+\cite{barami2024} A transparent reference evaluator should implement
+\begin{equation}
+ p_t=\max_{w:t\in w}p_w,\qquad
+ z_t=\mathbf{1}\{p_t\geq\tau\},\qquad \tau=0.85,
+\end{equation}
+with an explicit uncovered-frame policy. Event count is the number of
+positive runs, whereas duration is the sum of positive frame durations.
+For an explicitly observed-time estimand, a proposed valid-frame burden is
+\begin{equation}
+ B_{\mathrm{obs}}=
+ \frac{\sum_t v_t z_t\,\Delta t_t}{\sum_t v_t\,\Delta t_t},
+\end{equation}
+where $v_t$ is a documented validity mask and $\Delta t_t$ is frame duration.
+This proposed masked estimand must be distinguished from full-recording
+burden; missing observations are not automatically negative observations.
+It is motivated by the source summary dividing complete event spans by
+valid-child-frame count without intersecting the numerator with validity.
+\footnote{ASDMotion \texttt{detector.py:70--89}.}
+
+\subsection{Confirmed implementation findings}
+The following are findings about the pinned public source, not evidence
+that the published analysis used these same defects.
+\begin{enumerate}
+\item \textbf{Fresh-path execution blockers.} Aggregation references
+undefined \texttt{NET\_NAME}. Pose conversion reads an \texttt{adjust}
+key absent from the dictionary generated immediately upstream.
+Disabling the advertised optional child detector sets all IDs to $-1$
+and subsequently raises a no-child exception.
+\footnote{\texttt{aggregator.py:62};
+\texttt{openpose\_executor.py:105--113,196};
+\texttt{preprocess.py:58--64}. The first two are tested counterexamples.}
+\item \textbf{Event aggregation error.} After bypassing the undefined
+name in the test harness, scores for positive $[0,200)$, negative
+$[30,230)$, and positive $[60,260)$ yield two overlapping positive events
+and an intervening negative-duration interval, rather than one union
+$[0,260)$. The last positive run is excluded by the merge-loop bound.
+The implementation also uses $>$ instead of the paper's $\geq$.
+\footnote{\texttt{aggregator.py:20,44}; executable tests
+\texttt{test\_final\_positive\_run\_not\_merged} and
+\texttt{test\_threshold\_equality\_excluded}.}
+\item \textbf{Missing identity is not safely represented.}
+Fork \texttt{ChildDetect} indexes an ID of $-1$ as the last person slot.
+Matcher recovery chooses the farther of two neighboring reference frames;
+frame index zero is also treated as false in a proximity condition.
+The first two behaviors have executable counterexamples.
+\footnote{Fork \texttt{pose\_loading.py:705--706}; ASDMotion
+\texttt{skeleton\_matcher.py:58--60}.}
+\item \textbf{Burden reporting has edge cases.} A recording with no
+positive event produces no summary row. A 300-frame positive interval
+divided by only 100 valid child frames produces a burden of 3.0.
+Both are demonstrated by tests; their frequency in real data is unknown.
+\footnote{ASDMotion \texttt{detector.py:71--82}.}
+\item \textbf{Long-clip evaluation can depend on random cropping.}
+The fork's test pipeline applies a Python-random 200-frame crop before
+sampling. The sampler fixes a NumPy seed, which does not by itself control
+Python's random generator. Caller-wide seeding may control the crop, but
+the config does not exhaustively evaluate a long clip.
+\footnote{Fork \texttt{augmentations.py:1962--1983},
+\texttt{pose\_loading.py:79}, and \texttt{asdmotion.py} test pipeline.}
+\end{enumerate}
+
+\subsection{Reproducibility risks and adapter requirements}
+Additional source risks are unsorted pose-JSON file enumeration, accepted
+but unreconciled detection/pose length mismatch, width--height convention
+mismatch on fresh extraction, machine-specific dependency paths and conda
+launcher, removed NumPy \texttt{np.int} usage, and existence-only caches.
+The line-level audit separates confirmed interface differences from risks
+whose occurrence in the released data is unknown.
+\footnote{ASDMotion \texttt{openpose\_executor.py:126,191};
+\texttt{utils.py} video properties;
+\texttt{skeleton\_matcher.py:82--99}; \texttt{requirements.txt};
+\texttt{resources/run\_in\_env.bat}; fork
+\texttt{pose\_loading.py:127}; ASDMotion
+\texttt{preprocess.py:33--54}, \texttt{detector.py:30,61--65}.}
+
+The annotated-release schema must be adapted before using this fork.
+Its loader expects \texttt{label}, \texttt{frame\_dir}/\texttt{filename},
+and split-member lists referring to sample identifiers. Already-selected
+child arrays of shape $[T,17,2]$ need a singleton person axis and should
+bypass \texttt{ChildDetect}. Split names must match actual archive keys,
+not copied config placeholders. Verify binary-label semantics, unique
+sample identity, participant grouping, frame rates and time units first.
+Do not interpret a field as frames solely because its name contains
+\texttt{frame}; reconcile it against array length and frame rate.
+\footnote{Fork \texttt{pose\_dataset.py:98--113} and
+\texttt{pose\_loading.py:699--707}; proposed adapter requirements, with
+released-data measurements documented separately in the data audit.}
+
+The config's loss weights are $[0.75,0.25]$, while inference treats class
+1 as SMM. If training uses the same mapping, the positive class receives
+one third the per-example negative-class weight. This is not automatic
+minority-class compensation. Preserve the original setting for a named
+reproduction experiment, and test alternative weighting separately after
+confirming the released labels. The config also uses the same
+\texttt{test0} split for validation and test, so model-selection procedures
+need independent clarification.\footnote{Fork \texttt{asdmotion.py};
+ASDMotion \texttt{detector.py:49--50}.}
+
+\paragraph{Recommended next step.}
+Before adding a more complex model, create a validated deterministic
+adapter and a separate paper-defined evaluator. Preserve explicit unknown
+identity, test empty and overlapping-event cases, and establish independent
+participant splits. Then compare simple kinematic features and PoseC3D
+under the same coverage and duration metrics. This is a proposed research
+sequence motivated by the audit, not an experimental result.

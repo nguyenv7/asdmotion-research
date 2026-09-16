@@ -1,0 +1,93 @@
+\subsection{Continuous recordings: complete archive audit}
+\label{sec:continuous-audit}
+All 914 numeric pickle members of \artifact{data/raw/asdpose.zip} were
+successfully decoded and profiled, one member at a time directly inside
+the archive, with the restricted NumPy unpickler. No full extraction was
+needed. The ZIP also contains \texttt{db.csv}; its extracted manifest has
+914 rows, no duplicate filenames, and an exact one-to-one filename match
+to the pickle members. Archive CRC validation passed separately.
+These are measured local-release facts, reproducible with
+\artifact{scripts/07_profile_continuous.py}; per-recording results are in
+\artifact{data/processed/continuous_inventory.csv}, aggregate results in
+\artifact{data/processed/continuous_summary.json}, and CRC/inventory
+evidence in \artifact{data/processed/archive_summary.json}.
+
+\begin{table}[htbp]
+\centering\small
+\begin{tabular}{P{0.42\linewidth}rr}
+\toprule
+Quantity & Downloaded archive & Paper \\
+\midrule
+Children, explicit manifest ID & 241 & 241 \\
+Assessments, child/type/index combinations & 318 & 319 \\
+ADOS assessments & 226 & 226 \\
+PLS assessments & 70 & 71 \\
+Cognitive assessments & 22 & 22 \\
+Camera recordings & 914 & 883 \\
+Camera-stream hours & 599.77 & approximately 580 \\
+\bottomrule
+\end{tabular}
+\caption{Released continuous-archive inventory compared with paper
+denominators. Archive hours are $\sum T/\mathrm{fps}$; declared metadata
+duration sums to 599.75 hours. Simultaneous camera views contribute
+separately, so these are not unique child-observation hours.
+Paper values: \cite[pp.~3--4]{barami2024}.}
+\end{table}
+
+The manifest explicitly identifies \texttt{child\_id}, assessment type,
+\texttt{assessment\_index}, \texttt{camera\_index}, and filename.
+This is stronger identity evidence than parsing anonymous labeled-clip
+prefixes. However, the mapping between annotated-release identifiers and
+these manifest identities has \textbf{not been verified}. The release
+differences above must not be silently harmonized, and clinical metadata
+must not be joined to annotated clips using an assumed numeric-ID match.
+The continuous files contain poses and detection metadata; these
+inventories do not provide a verified continuous event-label crosswalk.
+Evidence: \artifact{data/interim/archive_metadata.csv},
+\artifact{data/processed/dataset_structure.json}, and
+\artifact{data/processed/continuous_summary.json}.
+
+Every continuous member has one person slot, 17 joints, two coordinate
+channels, and \texttt{float64} coordinates: $[1,T,17,2]$; confidence has
+shape $[1,T,17]$. Across the archive there are 62,698,358 pose frames.
+The median stream duration is 2,138.80 seconds (35.65 minutes), ranging
+from 449.44 to 5,398.12 seconds. Stored frame rates range from 21.694899
+to 30.300812 fps and frequently have fractional values. Rounded to the
+nearest integer, 679 files are 30 fps, 234 are 25 fps, and one is 22 fps;
+these rounded groups are descriptive, not resampling instructions.
+Several original image-shape tuples occur, including both landscape-like
+and portrait-like orderings. Establish the shape convention from provenance
+before feeding them into a model. Evidence:
+\artifact{data/processed/continuous_inventory.csv} and
+\artifact{data/processed/continuous_summary.json}.
+
+\paragraph{Missingness is substantial in the full recordings.}
+Exactly 20,178,332 frames (32.18\% of all pose frames) have all-zero
+coordinates, and the aggregate all-zero-confidence-frame count is the
+same. Two entire recordings have all-zero poses. The median recording has
+28.60\% all-zero pose frames, with an interquartile range of
+15.55--48.19\%. Zero-valued pose frames represent unavailable signal in
+this audit; the files alone do not establish whether the child was absent,
+occluded, undetected, or lost during preprocessing. No nonfinite coordinate
+or confidence values were found, but 176,069 confidence entries fall
+outside $[0,1]$. Confidence should therefore be audited before treating it
+as a bounded weight or probability. Per-joint mean confidence, including
+missing zeros and weighted by available array entries, ranges from about
+0.195 at the right ankle to 0.514 at the left shoulder; these differences
+are not direct estimates of anatomical movement quality. Evidence:
+\artifact{data/processed/continuous_summary.json}.
+
+\paragraph{Frame-count metadata require explicit alignment.}
+In 234 files, declared \texttt{frame\_count} differs from the pose-array
+length $T$. In every profiled file the equality
+\begin{equation}
+ \texttt{frame\_count}-T=\texttt{adjust}
+\end{equation}
+holds; the observed adjustment ranges from $-163$ to $4$.
+This establishes an accounting relation, not where in time frames were
+added or removed. The largest difference between stored duration and
+$T/\mathrm{fps}$ is 6.52 seconds. Annotation alignment must recover the
+meaning and temporal location of these adjustments before evaluating
+onset/offset accuracy. Evidence:
+\artifact{data/processed/continuous_inventory.csv} and
+\artifact{data/processed/continuous_summary.json}.

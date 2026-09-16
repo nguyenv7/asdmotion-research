@@ -1,0 +1,78 @@
+\section{What the original paper establishes}
+\label{sec:original-paper}
+
+This section describes the publication. The current release must not be assumed identical to its experimental dataset: the separate data audit in this report identifies different clip counts, mixed frame rates and missing-pose patterns. Publication claims and measured release properties remain separate until their versions are reconciled.
+
+\subsection{The target is SMM measurement within ASD}
+Barami and colleagues introduced ASDMotion, an algorithm for detecting stereotypical motor movements (SMMs), and ASDPose, the associated skeletal-motion dataset. SMMs include hand flapping, rocking, jumping and other repetitive movements. They are one aspect of restricted and repetitive behaviour, not a complete description of autism spectrum disorder (ASD). The paper explicitly notes that SMMs are neither universal in ASD nor exclusive to ASD and can have a self-regulatory function. Consequently, this study supports measurement of movement in children already diagnosed with ASD; it does not establish an ASD diagnostic classifier, a movement's psychological function, or whether that movement should be reduced. \cite[pp.~1--3]{barami2024}
+
+\subsection{Cohort, acquisition hierarchy, and selection}
+The study selected children with a DSM-5 ASD diagnosis and an ADOS-2 score of at least 2 on item D2 or the relevant D4/D5 stereotypical-behaviour item. Participants were recruited in 2017--2021 through the Azrieli National Centre for Autism and Neurodevelopment Research, connecting Ben-Gurion University with eight clinical sites. The age range was 1.4--8.0 years. This is a cohort selected for repetitive behaviour, not an unselected screening population. \cite[p.~3]{barami2024}
+
+The reported acquisition hierarchy is:
+\[
+241\ \text{children}\ \longrightarrow\ 319\ \text{assessments}
+\ \longrightarrow\ 883\ \text{camera recordings}
+\ \longrightarrow\ 580\ \text{camera-hours}.
+\]
+Each child contributed one or two assessments; two to four cameras recorded each assessment at 30 frames/s and $1080\times1920$ resolution. Assessment types were 226 ADOS-2, 71 PLS-4 language assessments, and 22 cognitive/developmental assessments (11 Mullen and 11 WPPSI-III). Simultaneous views therefore do not represent additional independent child-observation time. Clips, views and repeated assessments are nested within children. \cite[p.~3]{barami2024}
+
+The recognition training group comprised 220 children/295 assessments; the test group comprised 21 children/24 assessments. Training demographics were 172 males, 48 females and mean age 3.97 years (SD 1.30); test demographics were 15 males, 6 females and mean age 4.32 (SD 1.39). The abstract's 172 males and age 3.97 reproduce the training entries even though the sentence refers to the entire cohort. These should not be repeated as pooled cohort statistics. \cite[pp.~1,4]{barami2024}
+
+\subsection{Pipeline: representation and the reason for each stage}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Extract pose.} OpenPose estimates 17 body-joint locations in two image dimensions for every person in every frame. This compresses the raw image into body geometry while retaining motion across frames. The paper does not release the raw RGB videos. \cite[pp.~3,9]{barami2024}
+\item \textbf{Track identities.} An off-the-shelf spatiotemporal-affinity-field method keeps skeleton identities consistent across frames, supporting annotation and person selection. It was not additionally trained on this cohort. \cite[p.~3]{barami2024}
+\item \textbf{Select the child.} A COCO-pretrained YOLOv5 was trained on 30,000 frames from annotated positive segments, using an 80/20 split. Reported child-box precision and recall were 95\% and 92\%. The main text does not establish a child-disjoint split for this separate detector. Skeleton and YOLO boxes are matched by intersection-over-union; unmatched skeletons become adult, while unmatched detection boxes are discarded. Errors here can remove the target before motion classification. \cite[pp.~3--4]{barami2024}; Supplement~1, p.~3.
+\item \textbf{Construct positive/negative clips.} Annotators reviewed 580 hours and marked 7,352 positive segments, with event boundaries, movement type and child identity. The authors sampled 28,648 negatives with a matching length distribution. Training contained 6,597 positives and 24,923 negatives. The test cohort contained the remaining 755 positives. These are paper-reported counts, distinct from any independently inventoried release files. \cite[pp.~3--4]{barami2024}
+\item \textbf{Recognise motion.} PoseConv3D pretrained on Kinetics-400 operates on joint-confidence heatmaps. A training sample spans 200 original frames (about 6.7 seconds), while its model representation uses 48 two-dimensional heatmaps. Three-dimensional convolution learns across two spatial axes and time; this is not a measured three-dimensional skeleton. The supplement reports batch size 64, stochastic gradient descent and 100 epochs, at 83.49 minutes per epoch for the chosen model. Exact sampling and augmentation must be checked in code. \cite[p.~4]{barami2024}; Supplement~1, pp.~7--8.
+\item \textbf{Scan long recordings.} At inference, 200-frame windows advance by 30 frames; a frame receives the maximum score of all covering windows. Thresholding and joining contiguous positives yields detected episodes and assessment summaries. \cite[pp.~4--5]{barami2024}
+\end{enumerate}
+
+The 13 manually annotated movement categories include gross-body movements, finger flicking and repetitive object play, but the trained label is binary: any SMM versus non-SMM. The supplement states explicitly that categories were pooled. A methodological implication is that fine-finger and object-context information may be only partially represented by a coarse body skeleton; the paper does not experimentally quantify that information loss. (Supplement~1, pp.~5--6.)
+
+\subsection{Mathematical view of the temporal decision}
+The following notation explains the paper's verbal procedure; it is not an equation reproduced from the article. Let $t$ be a frame index, $W_k$ the frames covered by window $k$, $s_k\in[0,1]$ its score, $q_t$ the merged score, $\tau$ the threshold and $\widehat y_t$ the predicted binary label. The indicator $\mathbf{1}[A]$ equals one when condition $A$ holds:
+\[
+q_t=\max_{k:t\in W_k}s_k,
+\qquad \widehat y_t=\mathbf{1}[q_t\geq\tau],
+\qquad \tau=0.85.
+\]
+The paper calls 0.85 an arbitrary threshold and examines values from 0.5 to 0.9. Consecutive positive frames are joined into events. Missing-pose handling, last-window handling and frames lacking valid windows are implementation questions, not specified by this equation. \cite[pp.~4--5]{barami2024}
+
+For a specified population of evaluated frames, let $TP$, $FP$, $FN$ and $TN$ count true positives, false positives, false negatives and true negatives. Then the reported metric terminology corresponds to
+\[
+\mathrm{Precision}=\frac{TP}{TP+FP},\quad
+\mathrm{Recall}=\frac{TP}{TP+FN},\quad
+\mathrm{Specificity}=\frac{TN}{TN+FP},\quad
+\mathrm{NPV}=\frac{TN}{TN+FN}.
+\]
+The evaluation population and aggregation weights matter as much as these formulas. The original continuous evaluation and the selected reannotation experiment below are different populations. \cite[pp.~5,7]{barami2024}
+
+\subsection{Two evaluation stages that must remain distinct}
+\paragraph{Initial continuous evaluation.}
+On the original annotation of the held-out 24 assessments from 21 children, frame-level precision was 36.64\% (95\% CI 29.97--49.99\%) and recall was 87.72\% (84.22--94.22\%) at threshold 0.85. These results describe high recall with many apparent false positives. The sex-specific comparison involved 15 male and six female children; lack of a significant difference does not demonstrate subgroup equivalence. \cite[p.~5]{barami2024}
+
+\paragraph{Selected reannotation experiment.}
+The authors extracted 1,456 short segments with equal counts from the original true-positive, false-positive, true-negative and false-negative strata. Two annotators, blinded to model and original labels, judged the segments independently; agreement was 90\% and Cohen's $\kappa=0.76$. A segment was relabelled positive if either annotator called it positive. Reinspection converted 51\% of apparent false-positive segments into true positives and 9.8\% of false negatives into true negatives. \cite[pp.~5--7]{barami2024}
+
+This experiment produced the headline precision 66.82\% (95\% CI 55.28--72.05\%) and recall 92.53\% (81.09--95.10\%), with specificity 95.45\% and NPV 99\%. These are not event-detection accuracy or ASD diagnostic accuracy. The paper describes reinspection of selected segments, not independent exhaustive reannotation of every frame of the continuous test set. Sampling equally from original error strata changes the reviewed composition; the exact weights and effective denominators behind the final summary percentages cannot be reconstructed from the published values alone. \cite[p.~7]{barami2024}
+
+\paragraph{Assessment-level quantification.}
+Using reannotated data, the count/rate measure correlated with manual annotation at Pearson $r=0.80$ and concordance correlation 0.70. Percentage of time with SMMs had Pearson $r=0.88$ and concordance 0.73. Figure~3 plots SMMs per minute and time percentage per assessment; its 24 assessment observations should not be treated as 241 independent child-level validations. Correlation indicates association, while concordance also addresses agreement; neither establishes sensitive measurement of longitudinal clinical change. \cite[pp.~7--8]{barami2024}
+
+\subsection{Model comparison and reported limits}
+The supplement compares pretrained PoseC3D against unpretrained PoseC3D, ST-GCN and two-stream adaptive GCN. The selected pretrained model had the best reported precision and recall and the highest training time. ST-GCN encodes joints as graph nodes with spatial and temporal edges; the two-stream method separately models joints and bones. The same held-out cohort was used in this comparison and model selection. This supports the published choice under that protocol, but future experiments need a separate validation process and untouched final test data. (Supplement~1, pp.~7--8.)
+
+The authors identify uncertain generalisation to other contexts, older children, non-ASD populations and other developmental conditions; limited female representation; lack of subtype classification; untested event onset/offset accuracy; and the need for richer intensity/severity measures. Storage, computation and video privacy are additional constraints. These are limitations and open tasks, rather than measured performance on those external populations. \cite[p.~9]{barami2024}
+
+\subsection{Source consistency register}
+\begin{itemize}[leftmargin=*]
+\item The demographic table implies 187 males in the full cohort by addition, whereas the abstract reports the training count of 172. Training females are printed as 48 (22.82\%), but $48/220=21.82\%$. Prefer the source counts and split-specific ages until participant-level metadata is reconciled. \cite[pp.~1,4]{barami2024}
+\item Cognitive scores are listed for $183+16$ children, with $t$-test degrees of freedom 214; language scores for $148+9$, with degrees of freedom 174. These do not match ordinary two-group tests on exactly the stated counts. Do not infer missingness from the test statistics. \cite[p.~4]{barami2024}
+\item The stated $7{,}352\times9.89$ seconds gives approximately 20.20 hours, not the stated 21.14 positive hours. Rounding of the printed mean alone does not explain this; view/count conventions or a reporting error remain unresolved. \cite[p.~3]{barami2024}
+\item Main-text medians are 0.12 SMMs/minute and 1.55\% time, whereas Supplement~1 eTable~2 gives 0.1 and 1.4\%. Assessment-level versus video-level aggregation may account for this, but the source does not explicitly reconcile them. Keep both denominators visible. \cite[p.~5]{barami2024}; Supplement~1, p.~7.
+\item The main-text Kinetics-400 citation points to reference 43, which is actually the self-stimulatory-behaviour dataset; the supplement supplies the Kinetics reference. Bibliographic cross-references should be verified rather than copied mechanically. \cite[pp.~4,12]{barami2024}; Supplement~1, p.~9.
+\end{itemize}
+
+The detailed Markdown companion records exact page references, original figure/table page images, and the supplementary-file acquisition route. No original table or figure was redrawn. Supplement PDFs were retrieved from the official Europe PMC supplementary archive after the direct PMC links served browser-check HTML; the stored files were verified as readable PDFs.

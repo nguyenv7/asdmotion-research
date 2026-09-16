@@ -1,0 +1,62 @@
+[
+  {
+    "file": "references/source_snapshots/mmaction_asdmotion.py",
+    "bytes": 4477,
+    "sha256": "97a52117d19d5eb2937171620a43372d4884b1fc8313d501aa6577f8a31c2a5a"
+  },
+  {
+    "file": "references/source_snapshots/mmaction_augmentations.py",
+    "bytes": 76110,
+    "sha256": "fb898dbc1fe9b716357d1a4e7515ca90f72fc0f750b0fe334837232202ab56aa"
+  },
+  {
+    "file": "references/source_snapshots/mmaction_commit.json",
+    "bytes": 11068,
+    "sha256": "29fc3e16f7386aebe5ffc950b7514c37b6e3772ed47d933c71b5723382d4149a"
+  },
+  {
+    "file": "references/source_snapshots/mmaction_compose.py",
+    "bytes": 2076,
+    "sha256": "333b9e92824aa12aae9293f2814db522d061d4e4ed6e14a0e2bc00d5b91dd122"
+  },
+  {
+    "file": "references/source_snapshots/mmaction_formatting.py",
+    "bytes": 17310,
+    "sha256": "4ddc1c99fd77d6ca2195adff474e77c6206581e2b04aeab0b8f9e1d7bed410d9"
+  },
+  {
+    "file": "references/source_snapshots/mmaction_loading.py",
+    "bytes": 67291,
+    "sha256": "35041330102cb777bfefd47f3c3ca915e5ba45e267119468a30cc8dcc1a6bef4"
+  },
+  {
+    "file": "references/source_snapshots/mmaction_pose_dataset.py",
+    "bytes": 4505,
+    "sha256": "fdd94cdf644d1d832ab5e6ae5c3df846a11ec9756e1c4cda31acbd5b26b032b7"
+  },
+  {
+    "file": "references/source_snapshots/mmaction_pose_loading.py",
+    "bytes": 26896,
+    "sha256": "19072907272e547a17d9a2d72c65f8a566831f61edf7f32e96abc9721cd4d8d1"
+  },
+  {
+    "file": "references/source_snapshots/mmaction_tree.json",
+    "bytes": 274764,
+    "sha256": "b341c1a99464a373eb1f4b8ef8fdcb4f4a98855c38743f13038edf964bf43436"
+  },
+  {
+    "file": "references/source_snapshots/mmaction___init__.py",
+    "bytes": 2586,
+    "sha256": "cf4d9b574f53d688782f3d9e00681b7d69bf6c50c1a4c999173435d719f86758"
+  },
+  {
+    "file": "references/source_snapshots/upstream_commit.json",
+    "bytes": 5676,
+    "sha256": "c92d00f96642c9d9ac94d5333affbcb9168d213e0698be858b30d5e85ed26785"
+  },
+  {
+    "file": "external/ASDMotion-main.zip",
+    "bytes": 62573927,
+    "sha256": "66de355dba2dd6278083de0c229109873fafb703ef0e50274afca4cc60cbae57"
+  }
+]

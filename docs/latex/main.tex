@@ -1,0 +1,62 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=24mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype}
+\usepackage{graphicx,booktabs,longtable,tabularx,array,amsmath,amssymb,xcolor,enumitem,listings,fancyhdr,float}
+\usepackage[colorlinks=true,linkcolor=teal,urlcolor=teal,citecolor=teal,breaklinks=true]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\setlength{\emergencystretch}{3em}
+\setcounter{tocdepth}{2}
+\pagestyle{fancy}\fancyhf{}\fancyhead[L]{ASDMotion: data-first research dossier}\fancyhead[R]{16 September 2026}\fancyfoot[C]{\thepage}
+\setlength{\headheight}{14pt}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\artifact}[1]{\nolinkurl{#1}}
+\title{Understanding ASDMotion Before Choosing a Model\\\large Data, algorithms, reproducibility, and research directions}
+\author{Research workspace dossier}
+\date{16 September 2026\\Version 1.0 --- measured release audit and scoped literature search}
+\begin{document}
+\maketitle
+\begin{abstract}
+This dossier starts from the public Dinstein-Lab repository, the released skeleton data, and the 2024 JAMA Network Open paper. The central finding is a mismatch between the current labeled release and the published experiment, including a strong association between frame rate and label and substantial missing-pose imbalance. These are measured release properties, not proof that the published experiment was invalid. The most defensible first research objective is to establish movement recognition that survives these data-quality and acquisition checks. The document distinguishes source claims, code observations, measured data properties, and new research proposals. It provides a phase-by-phase plan and executable analysis code, followed by recent studies that ask different questions about autism and motion.
+\end{abstract}
+\textbf{Read first:} Sections~\ref{sec:findings} and \ref{sec:data} describe what was actually downloaded and measured. Then read the original-paper explanation, code audit, representation tutorial, and research plan. The source paper remains the authority for its claims; this report is a research analysis, not a clinical assessment.
+\begingroup\small\tableofcontents\endgroup
+\clearpage
+\section{Findings that determine the research strategy}\label{sec:findings}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{The target is movement measurement within an ASD cohort.} Stereotypical motor movement (SMM) is one aspect of restricted/repetitive behavior. The study has no non-ASD diagnostic comparison group. A negative movement clip does not mean a non-autistic child. \cite{barami2024}
+\item \textbf{The downloaded labeled release differs from the paper.} It contains 36,930 records, 8,267 positives and 28,663 negatives. The publication describes 36,000 selected segments, including 7,352 positives. The release has 329 distinct first identifier tokens; these are not verified participant IDs. Results below refer to the files hashed in \artifact{data/raw/manifest.json}, not automatically to the paper's cohort.
+\item \textbf{Acquisition metadata alone separates many labels.} All 28,663 negatives have 25-fps metadata; 6,520 positives have 30-fps metadata. A post-hoc rule declaring every 30-fps clip positive has precision 1.000 and recall 0.789 on this release without examining movement. This is a dataset diagnostic, not a validated predictive model. \artifact{data/processed/shortcut_audit.json}.
+\item \textbf{Missingness is informative about labels.} There are 3,276 completely zero-pose clips: 3,264 negative and 12 positive. At clip level, the average fraction of zero-confidence joints is 40.89\%. Zero coordinates must not silently become a real body location or a stationary child. \artifact{data/processed/dataset_summary.json}.
+\item \textbf{Evaluation setting changes the interpretation.} The paper's initial continuous-test frame precision/recall are 36.64\%/87.72\%. The headline 66.82\%/92.53\% uses selected reannotated segments. These are different reference-label/evaluation settings. \cite[pp.~5--8]{barami2024}
+\item \textbf{The public implementation needs repair before end-to-end reproduction.} Counterexample tests demonstrate fresh-input failures, event-merging defects and denominator risks. Source findings are pinned to repository snapshots; they do not establish which historical code ran the published experiment. \artifact{reports/pipeline_audit.md}.
+\item \textbf{Recent work broadens the question beyond classification.} Relevant perspectives include repetition topology, concurrent movement labels, fine hand kinematics, interpersonal synchrony, neural--motor coupling and measurement validity. This search did not verify independent reuse of these released ASDPose files; citing the paper is not evidence of reuse. Section~\ref{sec:literature} gives sources and scope.
+\end{enumerate}
+
+\input{data}
+\clearpage
+\input{paper}
+\clearpage
+\input{pipeline}
+\clearpage
+\input{understanding}
+\clearpage
+\input{literature}
+\clearpage
+\input{research_plan}
+\clearpage
+\section{Provenance, reproducibility and limits}
+The main repository was downloaded as a source ZIP because the local Git HTTPS helper was unavailable. The GitHub commit API identifies \artifact{f699dc7b7af5726df5d8e79161d192eac22cfafb} (3 October 2025); the ZIP and unmodified source are retained. Fork snapshots and their commit record are stored in \artifact{references/source_snapshots/}. Raw data checksums are local integrity anchors, not author-supplied authenticity signatures. All three repository-linked files were downloaded. The checkpoint is preserved but was not deserialized or run.
+
+The labeled clip audit covers every record. All 914 continuous skeleton files were also profiled; the scope and results are in \artifact{data/processed/continuous_summary.json}. Metadata and array checks do not visually validate every trajectory's child identity. The study paper, both supplements, and several accessible related PDFs are archived. Source and download manifests record retrieval limitations. Citation counts were not reliably available and were not invented. The literature search is a focused scoping review through 16 September 2026, not a preregistered systematic review.
+
+No GPU training, full historical-model reproduction, raw RGB re-extraction, ASD diagnosis experiment, or clinical subgroup association is claimed. Training requires a validated split and compatible model environment. The modern CPU analysis environment is intentionally separate from the historical Python 3.9/PyTorch 1.13/MMAction2 stack.
+
+\textbf{Audit record.} Product: Codex desktop; execution location: Local, Windows. Capabilities used: shell/Python, public-web retrieval, NumPy/Pandas data inspection, PDF extraction, LaTeX, parallel independent source and code audits. Effective source-audit mode: parallel-subagents; main author reconciled results against local artifacts. Numerical descriptions of downloaded data are generated by code. Own proposals are labeled as proposals. Paper figures are original-page extracts, never reconstructed as if they were the original.
+
+\begin{thebibliography}{9}
+\bibitem[Barami et al., 2024]{barami2024} T. Barami, L. Manelis-Baram, H. Kaiser, et al. Automated Analysis of Stereotypical Movements in Videos of Children With Autism Spectrum Disorder. \emph{JAMA Network Open}, 7(9):e2432851, 12 September 2024. \href{https://doi.org/10.1001/jamanetworkopen.2024.32851}{doi:10.1001/jamanetworkopen.2024.32851}. Open access, CC BY. Main paper and Supplements 1--2 are archived locally.
+\bibitem[Dinstein Lab, 2025 snapshot]{repo} Dinstein-Lab. ASDMotion source repository. Snapshot commit f699dc7, last commit 3 October 2025, retrieved 16 September 2026. \url{https://github.com/Dinstein-Lab/ASDMotion}. MIT code license. Dataset access statement is separate from code licensing.
+\end{thebibliography}
+\end{document}
